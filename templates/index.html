@@ -27,6 +27,17 @@
         <button id="view_story_button" class="control_button col s12 waves-effect waves-light btn blue grey lighten-5">View story</button>
         <button id="" class="control_button col s12 waves-effect waves-light btn blue grey lighten-5">Add choice</button>
         <div class="float_bottom">
+          <form action="#">
+            <div class="file-field input-field">
+              <div class="btn">
+                <span>File</span>
+                <input type="file">
+              </div>
+            </div>
+          </form>
+
+          <button id="load_button" class="control_button col s12 waves-effect waves-light btn blue darken-3">Load</button>
+
           <button id="export_button" class="control_button col s12 waves-effect waves-light btn red">Export</button>
           <div class="sub_header white_text">Do this often. Trust me.</div>
         </div>
@@ -74,7 +85,13 @@
             <div class="sub_header">ie. Donald, you need to get your shit together!!</div>
             <div class="row">
               <div class="input-field col s8">
-                <input id="incoming_text" type="text" class="validate">
+                <input id="incoming_from" type="text" class="validate">
+                <label for="incoming_from" data-error="" data-success="">From</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s8">
+                <input class="incoming_text" type="text" class="validate">
                 <label for="incoming_text" data-error="" data-success="">Event text</label>
               </div>
             </div>
@@ -83,7 +100,7 @@
 
           <!-- Requirements -->
           <div class="med_header">Requirements</div>
-          <div class="sub_header bot15">This event will only activate if these have been fulfilled</div>
+          <div class="sub_header bot15">This event will only activate if these have been fulfilled (use negative for less than)</div>
 
           <div id="requirements"></div>
           <div class="row top15">
@@ -103,7 +120,9 @@
 
           <!-- Triggers -->
           <div id="event_triggers">
-            <div class="med_header bot15">Triggers (ie news5):</div>
+            <div class="med_header">Triggers:</div>
+            <div class="sub_header bot15">(ie news5) Automatically trigger something, can be used to chain events together</div>
+
             <div class="trigger_list"></div>
             <button class="add_trigger_button waves-effect waves-light btn blue-grey lighten-2">Add trigger</button>
           </div>
@@ -228,8 +247,8 @@
 <script id="event_text_template" type="text/x-handlebars-template">
   <div class="row">
     <div class="input-field col s8">
-      <input id="event_key" type="text" class="validate">
-      <label for="event_key" data-error="" data-success="">Event text</label>
+      <input class="incoming_text" type="text" class="validate">
+      <label for="incoming_text" data-error="" data-success="">Event text</label>
     </div>
     <button class="waves-effect waves-light btn white delete_button top15">X</button>
   </div>

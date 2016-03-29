@@ -201,9 +201,11 @@ $(function() {
         var time = $info.find('#event_time').val();
 
         // incoming texts
+        var incoming_from = $eventForm.find('#incoming_from').val();
+
         var incoming_texts = [];
         $eventForm.find('#event_texts .incoming_text').each(function(i, text) {
-            incoming_text.push($(text).val());
+            incoming_texts.push($(text).val());
         });
 
         // requiremnts
@@ -287,7 +289,7 @@ $(function() {
             choices.push(choice);
         });
 
-        createEvent(key, time, requirements, event_triggers, choices);
+        createEvent(key, time, incoming_texts, incoming_from, requirements, event_triggers, choices);
     }
 
     /**
@@ -319,7 +321,7 @@ $(function() {
     /**
      * Create an event
      */
-    function createEvent(name, time, requirements, triggers, choices) {
+    function createEvent(name, time, incoming_texts, from, requirements, triggers, choices) {
         children = [];
         // $.each(choices, function(choice) {
         //     $.each(choice.triggers, function(trig) {
@@ -330,6 +332,8 @@ $(function() {
         game_event = {
             'name': name,
             'time': time,
+            'incoming_texts': incoming_texts,
+            'from': from,
             'requirements': requirements,
             'triggers': triggers,
             'choices': choices,

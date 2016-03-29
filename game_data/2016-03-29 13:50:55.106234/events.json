@@ -1,0 +1,132 @@
+{
+    "little_fingers": {
+        "children": [], 
+        "choices": [
+            {
+                "effects": {
+                    "funding": "0", 
+                    "none": "0", 
+                    "public image": "20"
+                }, 
+                "flags": [
+                    "little_fingers_lowrisk", 
+                    "trump_soft"
+                ], 
+                "key": "reasonable", 
+                "replies": [
+                    "Smart move!"
+                ], 
+                "text": "I will not justify childish comments with a response.", 
+                "triggers": [
+                    {
+                        "eventKey": "news_trumpsoft", 
+                        "time": "5"
+                    }
+                ]
+            }, 
+            {
+                "effects": {
+                    "expertise": "-10", 
+                    "none": "0", 
+                    "public image": "-40"
+                }, 
+                "flags": [
+                    "insulted_ted_cruz_birth"
+                ], 
+                "key": "attack", 
+                "replies": [
+                    "Yes! Gotta stand up to that asshat.", 
+                    "I'm on it."
+                ], 
+                "text": "Ted Cruz is a Canadian piece of shit!", 
+                "triggers": [
+                    {
+                        "eventKey": "dinner_party5_argument", 
+                        "time": "10"
+                    }, 
+                    {
+                        "eventKey": "news_trumpcruzfight", 
+                        "time": "5"
+                    }
+                ]
+            }
+        ], 
+        "from": "campaign manager", 
+        "incoming_texts": [
+            "Donald, Ted Cruz is saying you have little fingers, AGAIN!!", 
+            "How do you want to respond?"
+        ], 
+        "name": "little_fingers", 
+        "requirements": [
+            {
+                "eventKey": "news1", 
+                "type": "event"
+            }, 
+            {
+                "points_category": "public image", 
+                "type": "points", 
+                "val": "-400"
+            }
+        ], 
+        "time": "10", 
+        "triggers": []
+    }, 
+    "news1": {
+        "children": [], 
+        "choices": [
+            {
+                "effects": {
+                    "funding": "5", 
+                    "none": "0", 
+                    "public image": "20"
+                }, 
+                "flags": [
+                    "news1_lowrisk"
+                ], 
+                "key": "make_america_great", 
+                "replies": [], 
+                "text": "I want to make America great!", 
+                "triggers": []
+            }, 
+            {
+                "effects": {
+                    "expertise": "-10", 
+                    "none": "0", 
+                    "public image": "-40"
+                }, 
+                "flags": [
+                    "news1_highrisk"
+                ], 
+                "key": "bad", 
+                "replies": [
+                    "Wow Donald... um...you're the boss. Ok, I'll let them know."
+                ], 
+                "text": "America can suck my dick!", 
+                "triggers": [
+                    {
+                        "eventKey": "little_fingers", 
+                        "time": ""
+                    }, 
+                    {
+                        "eventKey": "news_dickcomment", 
+                        "time": "2"
+                    }
+                ]
+            }
+        ], 
+        "from": "campaign manager", 
+        "incoming_texts": [
+            "Fox news just announced your bid for the candidacy! WE'RE ON OUR WAY!", 
+            "They're asking for a quote. What do you want to say?"
+        ], 
+        "name": "news1", 
+        "requirements": [], 
+        "time": "3", 
+        "triggers": [
+            {
+                "eventKey": "dinner_party", 
+                "time": "5"
+            }
+        ]
+    }
+}

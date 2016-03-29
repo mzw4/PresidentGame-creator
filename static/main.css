@@ -47,6 +47,10 @@
     color: white;
 }
 
+#load_button {
+    color: white;
+}
+
 .float_button {
     position: fixed;
     right: 50px;
