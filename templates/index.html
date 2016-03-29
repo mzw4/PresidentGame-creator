@@ -1,0 +1,327 @@
+<!doctype html>
+
+<html>
+<head>
+  <title>The Next President Creator</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>    
+  <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
+
+</head>
+
+<body>
+
+  <div id="control_panel">
+    <div class="row">
+      <div id="controls" class="col s2">
+        <button id="open_global_options_button" class="control_button col s12 waves-effect waves-light btn blue grey lighten-5">Global options</button>
+        <button id="open_event_panel_button" class="control_button col s12 waves-effect waves-light btn blue grey lighten-5">Create an event</button>
+        <button id="view_story_button" class="control_button col s12 waves-effect waves-light btn blue grey lighten-5">View story</button>
+        <button id="" class="control_button col s12 waves-effect waves-light btn blue grey lighten-5">Add choice</button>
+        <div class="float_bottom">
+          <button id="export_button" class="control_button col s12 waves-effect waves-light btn red">Export</button>
+          <div class="sub_header white_text">Do this often. Trust me.</div>
+        </div>
+      </div>
+
+      <div id="settings" class="col s10 offset-s2">
+        <form id="global_options_panel">
+          <button id="save_global_options_button" class="float_button waves-effect waves-light btn red">Save Options</button>
+
+          <div class="med_header bot15">Global options</div>
+          <div class="win_criteria row">
+            <div class="input-field col s4">
+              <input id="event_key" type="text" class="validate" name="name">
+              <label for="event_key" data-error="" data-success="">Criteria name</label>
+            </div>
+            <div class="input-field col s4">
+              <input id="event_time" type="text" class="validate" name="weight">
+              <label for="event_time" data-error="" data-success="">Weight</label>
+            </div>
+          </div>
+
+          <div id="win_criterion"></div>
+          <button id="add_win_criteria_button" class="waves-effect waves-light btn blue-grey lighten-2">Add win criteria</button>
+        </form>
+
+        <form id="event_creation_form">
+          <button id="save_event_button" class="float_button waves-effect waves-light btn red">Save Event</button>
+
+          <!-- Event info -->
+          <div class="med_header">Event Info</div>
+          <div id="event_info" class="row">
+            <div class="input-field col s4">
+              <input id="event_key" type="text" class="validate">
+              <label for="event_key" data-error="" data-success="">Event Key</label>
+            </div>
+            <div class="input-field col s4">
+              <input id="event_time" type="text" class="validate">
+              <label for="event_time" data-error="" data-success="">Time</label>
+            </div>
+          </div>
+
+          <!-- Incoming texts -->
+          <div id="event_texts">
+            <div class="med_header">Incoming texts</div>
+            <div class="sub_header">ie. Donald, you need to get your shit together!!</div>
+            <div class="row">
+              <div class="input-field col s8">
+                <input id="incoming_text" type="text" class="validate">
+                <label for="incoming_text" data-error="" data-success="">Event text</label>
+              </div>
+            </div>
+          </div>
+          <button id="add_event_text_button" class="waves-effect waves-light btn blue-grey lighten-2">+</button>
+
+          <!-- Requirements -->
+          <div class="med_header">Requirements</div>
+          <div class="sub_header bot15">This event will only activate if these have been fulfilled</div>
+
+          <div id="requirements"></div>
+          <div class="row top15">
+            <div class="input-field col s3">
+              <select id="requirement_type_select">
+                <option value="event">Event occurred</option>
+                <option value="event_choice">Choice made</option>
+                <option value="points">Points value</option>
+              </select>
+              <label>Requirement type to add</label>
+            </div>
+
+            <div class="input-field col s3">
+              <button id="add_requirement_button" class="waves-effect waves-light btn blue-grey lighten-2">Add requirement</button>
+            </div>
+          </div>
+
+          <!-- Triggers -->
+          <div id="event_triggers">
+            <div class="med_header bot15">Triggers (ie news5):</div>
+            <div class="trigger_list"></div>
+            <button class="add_trigger_button waves-effect waves-light btn blue-grey lighten-2">Add trigger</button>
+          </div>
+
+          <!-- Choices -->
+          <div id="choices">
+            <div class="med_header">Response choices</div>
+            <div class="sub_header">ie. "Bite me Walter, I'm busy!"</div>
+          </div>
+          <button id="add_choice_button" class="waves-effect waves-light btn blue-grey lighten-2">Add choice</button>
+
+        </form>
+
+        <div id="story_view">
+          <div id="draggable">
+            <p>Drag me around</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+</body>
+
+{% raw %}
+
+<script id="choice_template" type="text/x-handlebars-template">
+  <div class="choice">
+    <div class="row">
+      <div class="input-field col s4">
+        <input id="event_choice_key" type="text">
+        <label for="event_choice_key" data-error="" data-success="">Id</label>
+      </div>
+      <div class="input-field col s8">
+        <input id="event_choice_text" class="choice_text" type="text">
+        <label for="event_choice_text" data-error="" data-success="">Response text</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="sm_header bot15">Replies</div>
+      <div class="replies"></div>
+      <button class="add_reply_button waves-effect waves-light btn blue-grey lighten-2">+</button>
+    </div>
+
+    <div class="row">
+      <div class="sm_header">Win condition effects (add/subtract points):</div>
+      <div class="win_condition_effect">
+        <div class="input-field col s3">
+          <select>
+            <option value="none">None</option>
+            {{#each win_criterion}}
+              <option value="{{this}}">{{this}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="input-field col s1">
+          <input placeholder="0" value="0" class="effect_val" type="number">
+        </div>
+      </div>
+      <div class="win_condition_effect">
+        <div class="input-field col s3">
+          <select>
+            <option value="none">None</option>
+            {{#each win_criterion}}
+              <option value="{{this}}">{{this}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="input-field col s1">
+          <input placeholder="0" value="0" class="effect_val" type="number">
+        </div>
+      </div>
+      <div class="win_condition_effect">
+        <div class="input-field col s3">
+          <select>
+            <option value="none">None</option>
+            {{#each win_criterion}}
+              <option value="{{this}}">{{this}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="input-field col s1">
+          <input placeholder="0" value="0" class="effect_val" type="number">
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="sm_header bot15">Triggers (ie news5):</div>
+      <div class="trigger_list"></div>
+      <button class="add_trigger_button waves-effect waves-light btn blue-grey lighten-2">+</button>
+
+      <div class="input-field col s12">
+        <div class="sm_header_inline">Flags (ie. news5_insulting):</div>
+        <div class="flag_list"></div>
+        <input placeholder="Add flag to set" class="flag_input" type="text">
+      </div>
+    </div>
+
+    <button class="waves-effect waves-light btn white delete_button absolute">X</button>
+  </div>
+</script>
+
+<script id="win_criteria_template" type="text/x-handlebars-template">
+  <div class="win_criteria row">
+    <div class="input-field col s4">
+      <input id="event_key" type="text" class="validate" name="name">
+      <label for="event_key" data-error="" data-success="">Criteria name</label>
+    </div>
+    <div class="input-field col s4">
+      <input id="event_time" type="text" class="validate" name="weight">
+      <label for="event_time" data-error="" data-success="">Weight</label>
+    </div>
+    <button class="waves-effect waves-light btn white delete_button top15">X</button>
+  </div>
+</script>
+
+<script id="event_text_template" type="text/x-handlebars-template">
+  <div class="row">
+    <div class="input-field col s8">
+      <input id="event_key" type="text" class="validate">
+      <label for="event_key" data-error="" data-success="">Event text</label>
+    </div>
+    <button class="waves-effect waves-light btn white delete_button top15">X</button>
+  </div>
+</script>
+
+<script id="trigger_template" type="text/x-handlebars-template">
+  <div class="trigger row">
+    <div class="input-field col s4">
+      <input id="event_key" type="text" class="validate">
+      <label for="event_key" data-error="" data-success="">Event key to trigger</label>
+    </div>
+    <div class="input-field col s4">
+      <input id="event_time" type="text" class="validate">
+      <label for="event_time" data-error="" data-success="">Time delay (optional)</label>
+    </div>
+    <button class="waves-effect waves-light btn white delete_button top15">X</button>
+  </div>
+</script>
+
+<script id="flag_template" type="text/x-handlebars-template">
+  <div class="flag_item">
+    <span class="flag_name">{{name}}</span>
+    <div class="delete_button">X</div>
+  </div>
+</script>
+
+<script id="reply_template" type="text/x-handlebars-template">
+  <div class="reply_item row">
+    <div class="col s4">
+      <input class="reply_text" type="text" class="validate">
+    </div>
+    <button class="waves-effect waves-light btn white delete_button top15">X</button>
+  </div>
+</script>
+
+<script id="required_event_template" type="text/x-handlebars-template">
+  <div class="required_event row">
+    <div class="input-field col s3">
+      <select class="required_event_select">
+        {{#each events}}
+          <option value="{{this}}">{{this}}</option>
+        {{/each}}
+      </select>
+      <label>Required event</label>
+    </div>
+    <button class="waves-effect waves-light btn white delete_button top15">X</button>
+  </div>
+</script>
+
+<script id="required_event_choice_template" type="text/x-handlebars-template">
+  <div class="required_event_choice row">
+    <div class="input-field col s4">
+      <select class="required_eventchoice_select">
+        <option value="None">None</option>
+        {{#each events}}
+          <option value="{{this}}">{{this}}</option>
+        {{/each}}
+      </select>
+      <label>Required event</label>
+    </div>
+
+    <div class="input-field col s4">
+      <select class="required_choice_select">
+        <option value="None">None</option>
+      </select>
+      <label>Required choice</label>
+    </div>
+    <button class="waves-effect waves-light btn white delete_button top15">X</button>
+  </div>
+</script>
+
+<script id="required_points_template" type="text/x-handlebars-template">
+  <div class="required_points row">
+    <div class="input-field col s3">
+      <select class="required_points_category_select">
+        <option value="none">None</option>
+        {{#each win_criterion}}
+          <option value="{{this}}">{{this}}</option>
+        {{/each}}
+      </select>
+      <label>Points category</label>
+    </div>
+    <div class="input-field col s1">
+      <input placeholder="0" value="0" class="required_val" type="number">
+    </div>
+    <button class="waves-effect waves-light btn white delete_button top15">X</button>
+  </div>
+</script>
+
+{% endraw %}
+
+</html>
+
+
+

@@ -1,0 +1,166 @@
+
+
+#control_panel {
+    text-align: left;
+    position: relative;
+    /*max-height: 800px;*/
+    height: 100%;
+    overflow: auto;
+}
+
+#controls {
+    padding: 32px;
+    background-color: #6699ff;
+    height: 100%;
+    position: fixed;
+}
+
+#settings {
+    padding: 32px;
+}
+
+#event_creation_form {
+    display: none;
+}
+
+#choices {
+    margin-top: 15px;
+}
+.choice {
+    position: relative;
+    padding: 15px;
+    /*border: 1px solid #3366ff;*/
+    background-color: #f8f8f8;
+    margin-bottom: 15px;
+    border-left: 5px solid #ff775f;
+}
+
+#requirements {
+    border-left: 5px solid #ff775f;
+}
+
+#story_view {
+    display: none;
+}
+
+#export_button {
+    color: white;
+}
+
+.float_button {
+    position: fixed;
+    right: 50px;
+}
+
+.float_bottom {
+    position: fixed;
+    bottom: 50px;
+}
+
+.trigger {
+    position: relative;
+}
+
+.flag_list {
+    display: inline-block;
+}
+.flag_item {
+    position: relative;
+    display: inline-block;
+    border: 1px solid gray;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.delete_button {
+    color: red;
+    display: inline-block;
+}
+.delete_button.absolute {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+
+.delete_button:hover {
+    cursor: pointer;
+}
+
+.med_header {
+    font-size: 24px;
+    color: gray;
+    margin-top: 15px;
+    margin-left: 10px;
+}
+
+.sm_header {
+    font-size: 18px;
+    color: gray;
+    margin-right: 15px;
+    margin-left: 10px;
+}
+
+.sm_header_inline {
+    font-size: 18px;
+    color: gray;
+    margin-right: 15px;
+    display: inline;
+}
+
+.sub_header {
+    color: #bfbfbf;
+    font-size: 16px;
+    margin-bottom: 15px;
+    margin-left: 10px;
+}
+
+.control_button {
+    margin-bottom: 15px;
+    color: gray;
+}
+
+.inline {
+    display: inline-block;
+}
+
+.left10 {
+    margin-left: 10px;
+}
+
+.bot15 {
+    margin-bottom: 15px;
+}
+
+.top15 {
+    margin-top: 15px;
+}
+
+.white_text {
+    color: white;
+}
+
+#draggable {
+    width: 150px; height: 150px; padding: 0.5em;
+    border: 1px solid #ccc;
+}
+
+.compact {
+    margin: 0 !important;
+}
+
+
+/* Overrides */
+
+.input-field {
+    margin-top: 10px;
+}
+
+.row {
+    margin-bottom: 0;
+    position: relative;
+}
+
+.btn {
+    margin-left: 10px;
+    margin-bottom: 15px;
+}
