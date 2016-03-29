@@ -26,17 +26,15 @@
         <button id="open_event_panel_button" class="control_button col s12 waves-effect waves-light btn blue grey lighten-5">Create an event</button>
         <button id="view_story_button" class="control_button col s12 waves-effect waves-light btn blue grey lighten-5">View story</button>
         <button id="" class="control_button col s12 waves-effect waves-light btn blue grey lighten-5">Add choice</button>
-        <div class="float_bottom">
-          <form action="#">
-            <div class="file-field input-field">
-              <div class="btn">
-                <span>File</span>
-                <input type="file">
-              </div>
-            </div>
-          </form>
 
-          <button id="load_button" class="control_button col s12 waves-effect waves-light btn blue darken-3">Load</button>
+        <!-- Load and export buttons -->
+        <div class="float_bottom">
+          <form class="file-field input-field">
+            <button id="load_button" class="control_button col s12 waves-effect waves-light btn blue darken-3">
+              <span>Load</span>
+              <input id="load_file_input" type="file">
+            </button>
+          </form>
 
           <button id="export_button" class="control_button col s12 waves-effect waves-light btn red">Export</button>
           <div class="sub_header white_text">Do this often. Trust me.</div>
@@ -187,7 +185,7 @@
 <script id="event_text_template" type="text/x-handlebars-template">
   <div class="row">
     <div class="input-field col s8">
-      <input class="incoming_text" type="text" class="validate" value={{text}}>
+      <input class="incoming_text" type="text" class="validate" value="{{text}}">
       <label {{#if text}}class="active"{{/if}} for="incoming_text" data-error="" data-success="">Event text</label>
     </div>
     <button class="waves-effect waves-light btn white delete_button top15">X</button>
@@ -291,7 +289,9 @@
 </script>
 
 <script id="story_event_row_template" type="text/x-handlebars-template">
-  <div id="row_{{time}}" class="story_event_row row">
+  <div id="row_{{time}}" class="row">
+    <div class="story_event_row_number col sm2">{{time}}</div>
+    <div class="story_event_row col sm10"></div>
   </div>
 </script>
 

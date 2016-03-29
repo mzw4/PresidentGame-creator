@@ -19,7 +19,7 @@
                 "text": "I will not justify childish comments with a response.", 
                 "triggers": [
                     {
-                        "event_key": "news_trumpsoft", 
+                        "eventKey": "news_trumpsoft", 
                         "time": "5"
                     }
                 ]
@@ -41,11 +41,11 @@
                 "text": "Ted Cruz is a Canadian piece of shit!", 
                 "triggers": [
                     {
-                        "event_key": "dinner_party5_argument", 
+                        "eventKey": "dinner_party5_argument", 
                         "time": "10"
                     }, 
                     {
-                        "event_key": "news_trumpcruzfight", 
+                        "eventKey": "news_trumpcruzfight", 
                         "time": "5"
                     }
                 ]
@@ -59,7 +59,7 @@
         "name": "little_fingers", 
         "requirements": [
             {
-                "event_key": "news1", 
+                "eventKey": "news1", 
                 "type": "event"
             }, 
             {
@@ -104,11 +104,11 @@
                 "text": "America can suck my dick!", 
                 "triggers": [
                     {
-                        "event_key": "little_fingers", 
+                        "eventKey": "little_fingers", 
                         "time": ""
                     }, 
                     {
-                        "event_key": "news_dickcomment", 
+                        "eventKey": "news_dickcomment", 
                         "time": "2"
                     }
                 ]
@@ -124,7 +124,7 @@
         "time": "3", 
         "triggers": [
             {
-                "event_key": "dinner_party", 
+                "eventKey": "dinner_party", 
                 "time": "5"
             }
         ]

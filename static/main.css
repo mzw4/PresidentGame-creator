@@ -91,8 +91,13 @@ body {
     display: inline-block;
     padding-right: 10px;
 }
-.story_event_row.row {
+.story_event_row {
     margin-bottom: 48px;
+    border-bottom: 1px solid gray;
+    width: 100%;
+}
+.story_event_row_number {
+
 }
 
 /* Class styles */

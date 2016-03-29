@@ -8,7 +8,7 @@ $(function() {
 
     flag_set = new Set()
 
-    events = {};
+    _events = {};
     flags = {};
 
     // ================== Templates ==================
@@ -105,9 +105,9 @@ $(function() {
         event.preventDefault();
         var type = $('#requirement_type_select').val();
         if(type === 'event') {
-            $('#requirements').append(required_event_template({ 'events': Object.keys(events) }));
+            $('#requirements').append(required_event_template({ 'events': Object.keys(_events) }));
         } else if (type === 'event_choice') {
-            $('#requirements').append(required_event_choice_template({ 'events': Object.keys(events) }));
+            $('#requirements').append(required_event_choice_template({ 'events': Object.keys(_events) }));
         } else {
             $('#requirements').append(required_points_template({'win_criterion': Object.keys(win_criterion)}));
         }
@@ -148,8 +148,8 @@ $(function() {
     // click event on story view to edit
     $('body').on('click', '.story_event', function() {
         var name = $(this).find('.event_name').text();
-        if(name in events) {
-            populateEventForm(events[name]);
+        if(name in _events) {
+            populateEventForm(_events[name]);
             showPanel('#event_creation_panel');
         } else {
             showToast('Invalid event, something is wrong.')
@@ -178,9 +178,36 @@ $(function() {
         exportGame();
     });
 
+    $('#load_file_input').on('change', function(event) {
+        // get uploaded file
+        var files = event.target.files;
+        var reader = new FileReader();
+
+        if (files.length > 0) {
+            // Closure to capture the file information.
+            reader.onload = (function(theFile) {
+                return function(e) {
+                    var data_json = JSON.parse(e.target.result);
+                    loadGameData(data_json);
+
+                    // reset the file form
+                    $('form.file-field').get(0).reset();
+                };
+            })(files[0]);
+
+            reader.readAsText(files[0]);
+        }
+    });
 
 
 
+    function loadGameData(event_data) {
+        _events = event_data;
+        var event_names = Object.keys(_events);
+        event_names.forEach(function(name) {
+            populateEventForm(_events[name])
+        })
+    }
 
     // initialize all select components
     function initSelect() {
@@ -197,8 +224,8 @@ $(function() {
         
         var eventKey = $eventSelect.val();
         console.log($eventSelect.val());
-        if(eventKey in events) {
-            events[eventKey].choices.forEach(function(choice, i) {
+        if(eventKey in _events) {
+            _events[eventKey].choices.forEach(function(choice, i) {
                 console.log(choice);
                 $select.append('<option value="' + choice.key + '">' + choice.key + '</option>');
             });
@@ -217,7 +244,7 @@ $(function() {
         setTextInputVal($eventForm, '#event_time', e.time);
         setTextInputVal($eventForm, '#incoming_from', e.from);
 
-        // incoming 
+        // incoming
         e.incoming_texts.forEach(function(incoming) {
             addIncomingText(incoming);
         });
@@ -226,11 +253,11 @@ $(function() {
         e.requirements.forEach(function(requirement) {
             var type = requirement.type;
             if(type === 'event') {
-                $select_input = $(required_event_template({ 'events': Object.keys(events) }));
+                $select_input = $(required_event_template({ 'events': Object.keys(_events) }));
                 $eventForm.find('#requirements').append($select_input);
                 setSelectInputVal($select_input, '.required_event_select', requirement.event_key);
             } else if (type === 'event_choice') {
-                $select_input = $(required_event_choice_template({ 'events': Object.keys(events) }));
+                $select_input = $(required_event_choice_template({ 'events': Object.keys(_events) }));
                 $eventForm.find('#requirements').append($select_input);
                 setSelectInputVal($select_input, 'select.required_eventchoice_select', requirement.event_key);
                 updateReqEventChoiceSelect($select_input.find('select.required_eventchoice_select'));
@@ -304,9 +331,9 @@ $(function() {
 
         // populate events
         var times = [];
-        event_keys = Object.keys(events);
+        event_keys = Object.keys(_events);
         event_keys.forEach(function(name) {
-            var e = events[name];
+            var e = _events[name];
             if (!isInt(e.time)) {
                 console.log('Invalid event time');
                 console.log(e);
@@ -332,7 +359,7 @@ $(function() {
                 }
             }
 
-            $story_view.find('#row_' + time).append(story_event_template({'name': e.name, 'choices': e.choices}));
+            $story_view.find('#row_' + time + ' .story_event_row').append(story_event_template({'name': e.name, 'choices': e.choices}));
             times.push(time);
         })
     }
@@ -344,7 +371,7 @@ $(function() {
 
         var data = {}
         data['game_settings'] = game_settings;
-        data['events'] = events;
+        data['events'] = _events;
         data['flags'] = flag_set;
 
         console.log({'data': JSON.stringify(data) });
@@ -502,7 +529,7 @@ $(function() {
             'choices': choices,
             'children': children
         }
-        events[name] = game_event;
+        _events[name] = game_event;
         console.log(game_event);
         return game_event;
     }
