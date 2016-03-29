@@ -1,4 +1,10 @@
 
+/* Page elements */
+
+body {
+    height: 100vh;
+    width: 100%;
+}
 
 #control_panel {
     text-align: left;
@@ -19,9 +25,12 @@
     padding: 32px;
 }
 
+#event_creation_panel {
+    display: none;
+}/*
 #event_creation_form {
     display: none;
-}
+}*/
 
 #choices {
     margin-top: 15px;
@@ -41,6 +50,8 @@
 
 #story_view {
     display: none;
+    height: 100%;
+    width: 100%;
 }
 
 #export_button {
@@ -49,16 +60,6 @@
 
 #load_button {
     color: white;
-}
-
-.float_button {
-    position: fixed;
-    right: 50px;
-}
-
-.float_bottom {
-    position: fixed;
-    bottom: 50px;
 }
 
 .trigger {
@@ -74,6 +75,43 @@
     border: 1px solid gray;
     border-radius: 5px;
     padding: 5px;
+}
+
+.story_event {
+    border: 1px solid #ff775f;
+    padding: 15px;
+    display: inline-block;
+    margin: 15px;
+}
+.story_event:hover {
+    cursor: pointer;
+}
+
+.story_event .event_choice_name {
+    display: inline-block;
+    padding-right: 10px;
+}
+.story_event_row.row {
+    margin-bottom: 48px;
+}
+
+/* Class styles */
+
+
+.float_button {
+    position: fixed;
+    right: 50px;
+}
+
+.float_container {
+    position: fixed;
+    right: 50px;
+    z-index: 500;
+}
+
+.float_bottom {
+    position: fixed;
+    bottom: 50px;
 }
 
 .delete_button {
@@ -143,7 +181,7 @@
     color: white;
 }
 
-#draggable {
+.draggable {
     width: 150px; height: 150px; padding: 0.5em;
     border: 1px solid #ccc;
 }
@@ -167,4 +205,12 @@
 .btn {
     margin-left: 10px;
     margin-bottom: 15px;
+}
+
+#toast-container {
+    bottom: auto;
+    left: auto;
+    top: 5px;
+    right: 45%;
+    height: 10px;
 }

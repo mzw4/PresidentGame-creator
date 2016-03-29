@@ -1,0 +1,28 @@
+{
+    "a": {
+        "children": [], 
+        "choices": [
+            {
+                "effects": {
+                    "none": "0"
+                }, 
+                "flags": [], 
+                "key": "b", 
+                "replies": [
+                    "aaa", 
+                    "avbrgfsr"
+                ], 
+                "text": "awdawd", 
+                "triggers": []
+            }
+        ], 
+        "from": "", 
+        "incoming_texts": [
+            ""
+        ], 
+        "name": "a", 
+        "requirements": [], 
+        "time": "4", 
+        "triggers": []
+    }
+}

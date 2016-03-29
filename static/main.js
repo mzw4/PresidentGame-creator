@@ -11,13 +11,8 @@ $(function() {
     events = {};
     flags = {};
 
-
-    // ================== Init ==================
-    
-    $( "#draggable" ).draggable();
-    initSelect();
-
     // ================== Templates ==================
+    var event_creation_form_template = Handlebars.compile($("#event_creation_form_template").html());
 
     var win_criteria_template = Handlebars.compile($("#win_criteria_template").html());
     var choice_template = Handlebars.compile($("#choice_template").html());
@@ -29,13 +24,28 @@ $(function() {
     var required_event_choice_template = Handlebars.compile($("#required_event_choice_template").html());
     var required_points_template = Handlebars.compile($("#required_points_template").html());
 
+    // story viewer templates
+    var story_event_template = Handlebars.compile($("#story_event_template").html());
+    var story_event_row_template = Handlebars.compile($("#story_event_row_template").html());
+    
+    // ================== Init ==================
+    
+    $( ".draggable" ).draggable();
+
+    initSelect(); // materialize select components
+
+    clearEventForm(); // empty event creation form
+
+    Materialize.toast('I am a toast!', 4000) // 4000 is the duration of the toast
+
+
     // ================== Event handlers ==================
 
     // ================== Navigation ==================
 
     $('#open_event_panel_button').on('click', function(event) {
         event.preventDefault();
-        showPanel('#event_creation_form');
+        showPanel('#event_creation_panel');
     });
 
     $('#open_global_options_button').on('click', function(event) {
@@ -46,6 +56,7 @@ $(function() {
     $('#view_story_button').on('click', function(event) {
         event.preventDefault();
         showPanel('#story_view');
+        populateStory();
     });
 
     // ================== Adding components ==================
@@ -59,20 +70,20 @@ $(function() {
         }
     });
 
-    $('#add_choice_button').on('click', function(event) {
+    $('body').on('click', '.add_choice_button', function(event) {
         event.preventDefault();
         $('#choices').append(choice_template({'win_criterion': Object.keys(win_criterion)}));
         initSelect();    
     });
 
-    $('#add_win_criteria_button').on('click', function(event) {
+    $('body').on('click', '#add_win_criteria_button', function(event) {
         event.preventDefault();
         $('#win_criterion').append(win_criteria_template({}));
     });
 
-    $('#add_event_text_button').on('click', function(event) {
+    $('body').on('click', '.add_event_text_button', function(event) {
         event.preventDefault();
-        $('#event_texts').append(event_text_template({}));
+        addIncomingText('');
     });
 
     $('body').on('click', '.add_trigger_button', function(event) {
@@ -87,19 +98,10 @@ $(function() {
 
     // required event choice populate choices
     $('body').on('change', 'select.required_eventchoice_select', function(event) {
-        var $select = $(this).closest('.required_event_choice').find('select.required_choice_select');
-        
-        var eventKey = $(this).val();
-        if(eventKey in events) {
-            events[eventKey].choices.forEach(function(choice, i) {
-                console.log(choice);
-                $select.append('<option value="' + choice.key + '">' + choice.key + '</option>');
-            });
-            initSelect();
-        }
+        updateReqEventChoiceSelect($(this));
     });
 
-    $('#add_requirement_button').on('click', function(event) {
+    $('body').on('click', '.add_requirement_button', function(event) {
         event.preventDefault();
         var type = $('#requirement_type_select').val();
         if(type === 'event') {
@@ -110,12 +112,6 @@ $(function() {
             $('#requirements').append(required_points_template({'win_criterion': Object.keys(win_criterion)}));
         }
         initSelect();
-    });
-
-    // create event
-    $('#create_event_button').on('click', function(event) {
-        event.preventDefault();
-
     });
 
     // save global options
@@ -134,10 +130,11 @@ $(function() {
             }
         });
         console.log(win_criterion);
+        showToast('Saved game options.')
 
     });
 
-    // add flag to event choice
+    // add flag to event choice when enter is pressed
     $('body').on('keyup', '.flag_input', function (e) {
         if (e.keyCode == 13) {
             flag_name = $(this).val()
@@ -148,13 +145,31 @@ $(function() {
         }
     });
 
+    // click event on story view to edit
+    $('body').on('click', '.story_event', function() {
+        var name = $(this).find('.event_name').text();
+        if(name in events) {
+            populateEventForm(events[name]);
+            showPanel('#event_creation_panel');
+        } else {
+            showToast('Invalid event, something is wrong.')
+        }
+    });
+
+
     $('body').on('click', '.delete_button', function() {
         $(this).parent().remove();
     });
 
+    $('#new_event_button').on('click', function(event) {
+        event.preventDefault();
+        clearEventForm();
+    });
+
     $('#save_event_button').on('click', function(event) {
         event.preventDefault();
-        saveEvent($('#event_creation_form'));
+        var key = saveEvent($('#event_creation_form'));
+        showToast('Event saved.')
     });
 
     $('#export_button').on('click', function(event) {
@@ -163,9 +178,113 @@ $(function() {
         exportGame();
     });
 
+
+
+
+
     // initialize all select components
     function initSelect() {
         $('select').material_select();
+    }
+
+    // Clear the event creation form
+    function clearEventForm() {
+        $('#event_creation_form_container').html(event_creation_form_template({}));
+    }
+
+    function updateReqEventChoiceSelect($eventSelect) {
+        var $select = $eventSelect.closest('.required_event_choice').find('select.required_choice_select');
+        
+        var eventKey = $eventSelect.val();
+        console.log($eventSelect.val());
+        if(eventKey in events) {
+            events[eventKey].choices.forEach(function(choice, i) {
+                console.log(choice);
+                $select.append('<option value="' + choice.key + '">' + choice.key + '</option>');
+            });
+            initSelect();
+        }
+    }
+
+
+    // Populate the event form with the given event to edit it
+    function populateEventForm(e) {
+        clearEventForm();
+        $eventForm = $('#event_creation_form');
+
+        // info
+        setTextInputVal($eventForm, '#event_key', e.name);
+        setTextInputVal($eventForm, '#event_time', e.time);
+        setTextInputVal($eventForm, '#incoming_from', e.from);
+
+        // incoming 
+        e.incoming_texts.forEach(function(incoming) {
+            addIncomingText(incoming);
+        });
+
+        // requirements
+        e.requirements.forEach(function(requirement) {
+            var type = requirement.type;
+            if(type === 'event') {
+                $select_input = $(required_event_template({ 'events': Object.keys(events) }));
+                $eventForm.find('#requirements').append($select_input);
+                setSelectInputVal($select_input, '.required_event_select', requirement.event_key);
+            } else if (type === 'event_choice') {
+                $select_input = $(required_event_choice_template({ 'events': Object.keys(events) }));
+                $eventForm.find('#requirements').append($select_input);
+                setSelectInputVal($select_input, 'select.required_eventchoice_select', requirement.event_key);
+                updateReqEventChoiceSelect($select_input.find('select.required_eventchoice_select'));
+                setSelectInputVal($select_input, 'select.required_choice_select', requirement.choice);
+            } else {
+                $select_input = $(required_points_template({'win_criterion': Object.keys(win_criterion)}));
+                $eventForm.find('#requirements').append($select_input);
+                setSelectInputVal($select_input, '.required_points_category_select', requirement.points_category);
+                setTextInputVal($select_input, '.required_val', requirement.val);
+            }
+        });
+    
+        // triggers
+        e.triggers.forEach(function(trig) {
+            $eventForm.find('.trigger_list')
+                .append(trigger_template({'event_key': trig.event_key, 'event_time': trig.time }));
+        });
+
+        // choices
+        e.choices.forEach(function(choice) {
+            // add choice and fill info
+            var $choice_html = $(choice_template({
+                'win_criterion': Object.keys(win_criterion),
+                'key': choice.key,
+                'text': choice.text
+            }));
+            $('#choices').append($choice_html);
+            initSelect();
+
+            // replies
+            choice.replies.forEach(function(reply) {
+                $choice_html.find('.replies').append(reply_template({ 'text': reply }));
+            });
+
+            // effects
+            var effects_names = Object.keys(choice.effects);
+            $choice_html.find('.win_condition_effect').each(function(i, eff) {
+                setSelectInputVal($(eff), 'select', effects_names[i]);
+                setTextInputVal($(eff), 'input', choice.effects[effects_names[i]]);
+            })
+
+            // triggers
+            choice.triggers.forEach(function(trig) {
+                $choice_html.find('.trigger_list')
+                    .append(trigger_template({'event_key': trig.event_key, 'event_time': trig.time }));
+            });
+
+            // flags
+            choice.flags.forEach(function(flag) {
+                $choice_html.find('.flag_list').append(flag_template({'name':flag}));
+            })
+        });
+
+        
     }
 
     // Display the specified panel
@@ -177,6 +296,48 @@ $(function() {
         });
     }
 
+    // Populate the story view panel
+    function populateStory() {
+        var $story_view = $('#story_view');
+        // clear story view
+        $story_view.html('');
+
+        // populate events
+        var times = [];
+        event_keys = Object.keys(events);
+        event_keys.forEach(function(name) {
+            var e = events[name];
+            if (!isInt(e.time)) {
+                console.log('Invalid event time');
+                console.log(e);
+                return;
+            }
+
+            var time = parseInt(e.time);
+            var row_template = story_event_row_template({'time': time});
+
+            // insert row if necessary, figure out where
+            if (times.length === 0) {
+                $story_view.prepend(row_template);
+            } else if (times[times.length-1] < time) {
+                $story_view.append(row_template);
+            } else {
+                for(var i = 0; i < times.length; i++) {
+                    if (times[i] === time) {
+                        break;
+                    }
+                    if (times[i] > time) {
+                        $story_view.find('#row_' + times[i]).before(row_template);
+                    }
+                }
+            }
+
+            $story_view.find('#row_' + time).append(story_event_template({'name': e.name, 'choices': e.choices}));
+            times.push(time);
+        })
+    }
+
+    // Export game to file by making call to Flask webserver
     function exportGame() {
         var game_settings = {}
         game_settings['points_categories'] = win_criterion;
@@ -190,7 +351,8 @@ $(function() {
 
         $.post('/save_game', {'data': JSON.stringify(data) }, function(response) {
             console.log(response);
-        }, 'json');
+            showToast('Exported game.');
+        });
     }
 
     // Save the event to memory
@@ -214,13 +376,13 @@ $(function() {
         $requirements.find('.required_event').each(function(i, req) {
             var req_obj = {}
             req_obj['type'] = 'event';
-            req_obj['eventKey'] = $(req).find('select.required_event_select').val();
+            req_obj['event_key'] = $(req).find('select.required_event_select').val();
             requirements.push(req_obj);
         });
         $requirements.find('.required_event_choice').each(function(i, req) {
             var req_obj = {}
             req_obj['type'] = 'event_choice';
-            req_obj['eventKey'] = $(req).find('select.required_eventchoice_select').val();
+            req_obj['event_key'] = $(req).find('select.required_eventchoice_select').val();
             req_obj['choice'] = $(req).find('select.required_choice_select').val();
             requirements.push(req_obj);
         });
@@ -290,6 +452,7 @@ $(function() {
         });
 
         createEvent(key, time, incoming_texts, incoming_from, requirements, event_triggers, choices);
+        return key;
     }
 
     /**
@@ -297,7 +460,7 @@ $(function() {
      */
     function createTrigger(eventKey, time) {
         trigger = {
-            'eventKey': eventKey,
+            'event_key': eventKey,
             'time': time
         }
         return trigger;
@@ -323,11 +486,11 @@ $(function() {
      */
     function createEvent(name, time, incoming_texts, from, requirements, triggers, choices) {
         children = [];
-        // $.each(choices, function(choice) {
-        //     $.each(choice.triggers, function(trig) {
-        //         children.push(trig.eventKey);
-        //     });
-        // });
+        choices.forEach(function(choice) {
+            choice.triggers.forEach(function(trig) {
+                children.push(trig.event_key);
+            });
+        });
 
         game_event = {
             'name': name,
@@ -344,4 +507,43 @@ $(function() {
         return game_event;
     }
 
+    // Component adding function
+
+    function setTextInputVal($source, $el, val) {
+        var $input = $source.find($el);
+        $input.val(val);
+        $input.next('label').addClass('active');
+    }
+
+    function setSelectInputVal($source, $el, val) {
+        var $input = $source.find($el);
+        $input.val(val);
+        initSelect();
+    }
+
+    function addIncomingText(text) {
+        $('#event_texts').append(event_text_template({'text': text}));
+    }
+
 });
+
+
+
+
+
+
+// Utility functions
+
+
+function showToast(text) {
+    Materialize.toast(text, 2000);
+}
+
+function isInt(n) {
+  return !isNaN(parseInt(n)) && isFinite(n);
+}
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
