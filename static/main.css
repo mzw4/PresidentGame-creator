@@ -25,6 +25,15 @@ body {
     padding: 32px;
 }
 
+#instructions_panel {
+    padding: 16px 128px;
+    /*text-align: center;*/
+}
+
+#global_options_panel {
+    display: none;
+}
+
 #event_creation_panel {
     display: none;
 }
@@ -32,11 +41,6 @@ body {
 .float_container button {
     width: 150px;
 }
-
-/*
-#event_creation_form {
-    display: none;
-}*/
 
 #choices {
     margin-top: 15px;
@@ -113,6 +117,15 @@ body {
 
 }
 
+
+.img_wrapper {
+    text-align: center;
+    margin-top: 15px;
+}
+.img_wrapper img {
+    height: 300px;
+}
+
 /* Class styles */
 
 
@@ -147,8 +160,23 @@ body {
     cursor: pointer;
 }
 
+.lg_header {
+    font-size: 32px;
+    color: #ff775f;
+    margin-bottom: 15px;
+    width: 100%;
+    text-align: center;
+}
+
 .med_header {
     font-size: 24px;
+    margin-top: 15px;
+    margin-left: 10px;
+    color: #ff775f;
+}
+
+.med_header_gray {
+    font-size: 20px;
     color: gray;
     margin-top: 15px;
     margin-left: 10px;
@@ -173,6 +201,8 @@ body {
     font-size: 16px;
     margin-bottom: 15px;
     margin-left: 10px;
+    max-width: 600px;
+    text-align: justify;
 }
 
 .control_button {
@@ -198,6 +228,14 @@ body {
 
 .white_text {
     color: white;
+}
+
+.blue_text {
+    color: #1565C0;
+}
+
+.red_text {
+    color: #ff775f;
 }
 
 .draggable {

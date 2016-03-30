@@ -2,7 +2,7 @@
 $(function() {
     // ================== Global vars ==================
 
-    curPanel = '#global_options_panel';
+    curPanel = '#instructions_panel';
     win_criterion = {}
 
     _events = {};
@@ -34,11 +34,16 @@ $(function() {
 
     initSelect(); // materialize select components
 
-    clearEventForm(); // empty event creation form
+    clearEventForm(true); // empty event creation form
 
     // ================== Event handlers ==================
 
     // ================== Navigation ==================
+
+    $('#open_instructions_button').on('click', function(event) {
+        event.preventDefault();
+        showPanel('#instructions_panel');
+    });
 
     $('#open_event_panel_button').on('click', function(event) {
         event.preventDefault();
@@ -212,6 +217,11 @@ $(function() {
     function initSelect() {
         $('select').material_select();
     }
+
+    // // init materialize tooltip
+    // function initTooltips() {
+    //     $('.tooltipped').tooltip({delay: 50});
+    // }
 
     // Init form fields
     function initFormFields() {
@@ -401,6 +411,7 @@ $(function() {
                 $choice_html.find('.flags_to_set').append(flag_template({'name':flag}));
             })
         });
+    
     }
 
     // Populate the story view panel

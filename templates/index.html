@@ -24,9 +24,10 @@
   <div id="control_panel">
     <div class="row">
       <div id="controls" class="col s2">
+        <button id="open_instructions_button" class="control_button col s12 waves-effect waves-light btn blue darken-3 white_text">Instructions</button>
         <button id="open_global_options_button" class="control_button col s12 waves-effect waves-light btn blue grey lighten-5">Global options</button>
-        <button id="open_event_panel_button" class="control_button col s12 waves-effect waves-light btn blue grey lighten-5">Create an event</button>
-        <button id="view_story_button" class="control_button col s12 waves-effect waves-light btn blue grey lighten-5">View story</button>
+        <button id="open_event_panel_button" class="control_button col s12 waves-effect waves-light btn blue grey lighten-5">Event Creation</button>
+        <button id="view_story_button" class="control_button col s12 waves-effect waves-light btn blue grey lighten-5">Story View</button>
 
         <!-- Load and export buttons -->
         <div class="float_bottom">
@@ -44,13 +45,74 @@
 
       <div id="settings" class="col s10 offset-s2">
 
+        <div id="instructions_panel">
+          <div class="lg_header">Welcome Great Creator!</div>
+          <div class="med_header_gray">You are about to embark on an epic and perilous journey of little fingers, dick measuring, and free college education. I urge you to leave your sense of reason behind, because it will mostly likely be destroyed by the intricate web of political tomfoolery and immature racist floundering that is the <span class="blue_text">United States Presidential Election of 2016.</span></div>
+
+          <div class="img_wrapper">
+            <img src="{{ url_for('static', filename='pics/trumpfired.jpg') }}">
+            <img src="{{ url_for('static', filename='pics/bern.png') }}">
+          </div>
+
+          <div class="med_header_gray">Here's what you need to know to get your creative <span class="red_text">star spangled</span> juices flowing.</div>
+          <br><br>
+
+          <div class="lg_header">Gobal Options</div>
+          <div class="med_header_gray">This is where you set options that apply to the game as a whole. Right now the only thing here is the points categories that determine if the player wins or not, and if certain events occur. Use the save button to keep your changes.</div>
+          <br><br>
+
+          <div class="lg_header">Event Creation</div>
+          <div class="med_header_gray">
+            The is where you get to make all your dreams comes true, and create events for the story! The most important things in an event are the <span class="red_text">key</span> which identifies it, the <span class="red_text">time</span> which determines when it occurs, <span class="red_text">incoming texts</span> which determine what ACTUALLY happens in the event and from who, and <span class="red_text">response choices</span>, which are the player's options for responding!<br><br>
+            Note that you shouldn't think of an event as one big story element. "Event" just means a single text interaction. So if your story element is a back and forth exchange where Trump's wife tries to explain how she's been filing your family's taxes fraudulently for 15 years, this will actually be composed of many "events". You'll have to chain them together by triggering one after the other.<br><br>
+            <span class="blue_text">Saving</span><br>
+            To save an event, hit the save button. This will save the event into the browser, but if you close the browser without exporting you will still lose everything.<br><br>
+
+            <span class="blue_text">Deleting</span><br>
+            To delete an event, hit the delete button. This will delete the event with the key that is currently in the key field, if it has been saved. I'm really nice, so I made an undo button!<br><br>
+
+            <span class="blue_text">Cloning</span><br>
+            To copy an event, simply change the key and save it again. This is just like creating a whole new event. Will be useful if events are similar.<br><br>
+
+            <span class="blue_text">Creating a new event</span><br>
+            To clear the form, hit the new event button. You can start a clean slate like this. This will not delete anything, as long as you have saved your event!<br><br>
+
+            As you can tell, you'll be spending most of your time in this section. Oh, and if you want to keep the shit you make, <span class="red_text">REMEMBER TO SAVE SAVE SAVE</span>.
+          </div>
+          <br><br>
+
+          <div class="lg_header">Story View</div>
+          <div class="med_header_gray">
+            Here you will see your baby come to life and how badly you've fucked up the story progression, at which point you can click into each event and edit them to unfuck it up! You will see events lined up chronologically by their time of occurance and the possible choices in each event. Everything will be displayed by the keys you named, so if you use ridiculous incomprehensible keys you will become confused and flustered when you see this and realize how stupid that was!<br><br>
+            Currently in progress is the ability to see which events connect to which ones in the story, which will be a line that goes from a choice to the event that it triggers or enables.
+          </div>
+          <br><br>
+
+          <div class="lg_header">Exporting a file</div>
+          <div class="med_header_gray">
+            This is what will truly save your file. Even if you have been saving your events, the moment you close your window, all will be lost!!! So <span class="red_text">REMEMBER TO EXPORT EXPORT EXPORT EXPORT EXPORT EXPORT EXPORT EXPORT EXPORT EXPORT EXPORT EXPORT EXPORT. </span>This will save your story as a downloadable json file that will be loaded into the game engine we make for iOS. When you export, you might run into a window that tells you there are errors in your game. You must correct these errors before exporting because you probably messed something up and the game won't work.
+          </div><br><br>
+
+          <div class="lg_header">Loading a file</div>
+          <div class="med_header_gray">
+            Use the load button to load a game file for editting! If the structure that we use has changed since it was created, you might have errors loading the file. If that happens, call the ghost busters.
+          </div><br><br><br><br><br><br>
+
+        </div>
+
         <!-- Global Options panels -->
         <form id="global_options_panel">
           <button id="save_global_options_button" class="float_button waves-effect waves-light btn red">Save Options</button>
 
-          <div class="med_header bot15">Global options</div>
+          <div class="med_header bot15">Points Categories</div>
+          <div class="sub_header bot15">
+            The player will accumulate them over time to determine if they win!
+            These can also determine if certain events occur or not (see requirements section of the event editor).
+            The weights determine which categories are more important.
+            It's the ratio that matters, so if they are all the same, they are equal weights.
+          </div>
           <div id="win_criterion"></div>
-          <button id="add_win_criteria_button" class="waves-effect waves-light btn blue-grey lighten-2">Add win criteria</button>
+          <button id="add_win_criteria_button" class="waves-effect waves-light btn blue-grey lighten-2">Add points category</button>
         </form>
 
         <!-- Event creation panel -->
@@ -90,7 +152,7 @@
 
   <div id="error_modal" class="modal">
     <div class="modal-content">
-      <div class="med_header">You fucked something up!</div>
+      <div class="med_header bot15">You fucked something up!</div>
       <div class="sub_header">There are errors in the game that you have to fix before you can export :)</div>
       <div class="error_list"></div>
     </div>
@@ -132,7 +194,7 @@
     </div>
 
     <div class="row">
-      <div class="sm_header">Win condition effects (add/subtract points):</div>
+      <div class="sm_header">Points effects (add/subtract points):</div>
       <div class="win_condition_effect">
         <div class="input-field col s3">
           <select>
@@ -193,12 +255,10 @@
 <script id="win_criteria_template" type="text/x-handlebars-template">
   <div class="win_criteria row">
     <div class="input-field col s4">
-      <input value="{{name}}" id="points_category_name" type="text" class="validate" name="name">
-      <label {{#if name}}class="active"{{/if}} for="points_category_name" data-error="" data-success="">Criteria name</label>
+      <input value="{{name}}" type="text" class="points_category_name validate" name="name" placeholder="Category name">
     </div>
     <div class="input-field col s4">
-      <input value="{{weight}}" id="points_category_weight" type="text" class="validate" name="weight">
-      <label {{#if weight}}class="active"{{/if}} for="points_category_weight" data-error="" data-success="">Weight</label>
+      <input value="{{weight}}" type="text" class="points_category_weight validate" name="weight" placeholder="Weight">
     </div>
     <button class="waves-effect waves-light btn white delete_button top15">X</button>
   </div>
@@ -320,6 +380,7 @@
 
     <!-- Event info -->
     <div class="med_header">Event Info</div>
+    <div class="sub_header">The key is used to identify the event in other places (no spaces allowed).<br>The time determines when the event will occur in "game time". If not set, it must be triggered with a delay.</div>
     <div id="event_info" class="row">
       <div class="input-field col s4">
         <input id="event_key" type="text" class="validate">
@@ -346,7 +407,7 @@
 
     <!-- Requirements -->
     <div class="med_header">Requirements</div>
-    <div class="sub_header bot15">This event will only activate if these have been fulfilled (use negative for less than)</div>
+    <div class="sub_header bot15">This event will only activate if these have been fulfilled (in the points category, use negative for less than)<br>If the event is triggered, you can ignore this section.</div>
 
     <div id="requirements"></div>
     <div class="row top15">
@@ -367,7 +428,8 @@
     <!-- Triggers -->
     <div id="event_triggers">
       <div class="med_header">Triggers:</div>
-      <div class="sub_header bot15">(ie news5) Automatically trigger something, can be used to chain events together</div>
+
+      <div class="sub_header bot15">Automatically trigger something, can be used to chain events together (ie news5).<br>If no time delay is specified, it will be added at the event's own time field.</div>
 
       <div class="trigger_list"></div>
       <button class="add_trigger_button waves-effect waves-light btn blue-grey lighten-2">Add trigger</button>
