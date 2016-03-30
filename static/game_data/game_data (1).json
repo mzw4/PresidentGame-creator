@@ -48,7 +48,6 @@
             ], 
             "from": "campaign manager", 
             "incoming_texts": [
-                "", 
                 "Fox news just announced your bid for the candidacy! WE'RE ON OUR WAY!", 
                 "They're asking for a quote. What do you want to say?"
             ], 
@@ -108,7 +107,6 @@
             ], 
             "from": "campaign manager", 
             "incoming_texts": [
-                "", 
                 "Fox news just announced your bid for the candidacy! WE'RE ON OUR WAY!", 
                 "They're asking for a quote. What do you want to say?"
             ], 
@@ -170,7 +168,6 @@
             ], 
             "from": "campaign manager", 
             "incoming_texts": [
-                "", 
                 "Fox news just announced your bid for the candidacy! WE'RE ON OUR WAY!", 
                 "They're asking for a quote. What do you want to say?"
             ], 

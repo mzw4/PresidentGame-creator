@@ -7,12 +7,14 @@
   <!-- CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='typeahead.css') }}">
 
   <!-- JS -->
   <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>    
   <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+  <script src="{{ url_for('static', filename='typeahead.bundle.js') }}"></script>
   <script src="{{ url_for('static', filename='main.js') }}"></script>
 
 </head>
@@ -86,6 +88,17 @@
     </div>
   </div>
 
+  <div id="error_modal" class="modal">
+    <div class="modal-content">
+      <div class="med_header">You fucked something up!</div>
+      <div class="sub_header">There are errors in the game that you have to fix before you can export :)</div>
+      <div class="error_list"></div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+    </div>
+  </div>
+
 </body>
 
 {% raw %}
@@ -108,6 +121,14 @@
       <div class="sub_header bot15">Direct responses to your text</div>
       <div class="replies"></div>
       <button class="add_reply_button waves-effect waves-light btn blue-grey lighten-2">+</button>
+    </div>
+
+    <div class="row">
+      <div class="input-field col s12">
+        <div class="sm_header_inline">Required flags:</div>
+        <div class="required_flags flag_list"></div>
+        <input placeholder="Add required flag" class="flag_input typeahead" type="text">
+      </div>
     </div>
 
     <div class="row">
@@ -159,9 +180,9 @@
       <button class="add_trigger_button waves-effect waves-light btn blue-grey lighten-2">+</button>
 
       <div class="input-field col s12">
-        <div class="sm_header_inline">Flags (ie. news5_insulting):</div>
-        <div class="flag_list"></div>
-        <input placeholder="Add flag to set" class="flag_input" type="text">
+        <div class="sm_header_inline">Flags to set (ie. news5_insulting):</div>
+        <div class="flags_to_set flag_list"></div>
+        <input placeholder="Add flag to set" class="flag_input typeahead" type="text">
       </div>
     </div>
 
@@ -186,8 +207,8 @@
 <script id="event_text_template" type="text/x-handlebars-template">
   <div class="row">
     <div class="input-field col s8">
-      <input class="incoming_text" type="text" class="validate" value="{{text}}">
-      <label {{#if text}}class="active"{{/if}} for="incoming_text" data-error="" data-success="">Event text</label>
+      <input id="incoming_text_id" class="incoming_text" type="text" class="validate" value="{{text}}">
+      <label {{#if text}}class="active"{{/if}} for="incoming_text_id" data-error="" data-success="">Event text</label>
     </div>
     <button class="waves-effect waves-light btn white delete_button top15">X</button>
   </div>
@@ -196,12 +217,10 @@
 <script id="trigger_template" type="text/x-handlebars-template">
   <div class="trigger row">
     <div class="input-field col s4">
-      <input value="{{event_key}}" id="event_key" type="text" class="validate">
-      <label {{#if event_key}}class="active"{{/if}} for="event_key" data-error="" data-success="">Event key to trigger</label>
+      <input value="{{event_key}}" id="trigger_event_key" type="text" class="event_key validate typeahead" placeholder="Event key to trigger">
     </div>
     <div class="input-field col s4">
-      <input value="{{event_time}}" id="event_time" type="text" class="validate">
-      <label {{#if event_time}}class="active"{{/if}} for="event_time" data-error="" data-success="">Time delay (optional)</label>
+      <input value="{{event_time}}" id="trigger_event_time" type="text" class="event_time validate" placeholder="Time delay (optional)">
     </div>
     <button class="waves-effect waves-light btn white delete_button top15">X</button>
   </div>
@@ -216,7 +235,7 @@
 
 <script id="reply_template" type="text/x-handlebars-template">
   <div class="reply_item row">
-    <div class="col s4">
+    <div class="col s8">
       <input value="{{text}}" class="reply_text" type="text" class="validate">
     </div>
     <button class="waves-effect waves-light btn white delete_button top15">X</button>
@@ -276,7 +295,6 @@
     <button class="waves-effect waves-light btn white delete_button top15">X</button>
   </div>
 </script>
-
 
 <script id="story_event_template" type="text/x-handlebars-template">
   <div class="story_event">

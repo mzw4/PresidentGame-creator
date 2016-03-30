@@ -3,13 +3,10 @@ $(function() {
     // ================== Global vars ==================
 
     curPanel = '#global_options_panel';
-    // win_criterion = ['public image', 'funding']
     win_criterion = {}
 
-    flag_set = new Set()
-
     _events = {};
-    flags = {};
+    _flag_set = new Set()
 
     _recently_deleted_event = null;
 
@@ -72,8 +69,7 @@ $(function() {
 
     $('body').on('click', '.add_choice_button', function(event) {
         event.preventDefault();
-        $('#choices').append(choice_template({'win_criterion': Object.keys(win_criterion)}));
-        initSelect();    
+        addChoice($('#choices'), '', '');
     });
 
     $('body').on('click', '#add_win_criteria_button', function(event) {
@@ -88,7 +84,7 @@ $(function() {
 
     $('body').on('click', '.add_trigger_button', function(event) {
         event.preventDefault();
-        $(this).prev('.trigger_list').append(trigger_template({}));
+        addTrigger($(this).parent(), '', '');
     });
 
     $('body').on('click', '.add_reply_button', function(event) {
@@ -139,7 +135,8 @@ $(function() {
         if (e.keyCode == 13) {
             flag_name = $(this).val()
             if(flag_name) {
-                $(this).prev('.flag_list').append(flag_template({'name':flag_name}));
+                // parent because typeahead wraps the input
+                $(this).parent().prev('.flag_list').append(flag_template({'name':flag_name}));
                 $(this).val('');
             }
         }
@@ -209,22 +206,7 @@ $(function() {
         }
     });
 
-
-    /**
-     * Load game data in from a file
-     */
-    function loadGameData(game_data) {
-        _events = game_data['events'];
-
-        // Populate events
-        var event_names = Object.keys(_events);
-        event_names.forEach(function(name) {
-            populateEventForm(_events[name]);
-        });
-
-        // Populate points categories
-        populateGameSettings(game_data['game_settings']);
-    }
+    // ================== Init functions ==================
 
     // initialize all select components
     function initSelect() {
@@ -235,6 +217,52 @@ $(function() {
     function initFormFields() {
         $('#win_criterion').append(win_criteria_template({}));
         addIncomingText('');
+    }
+
+    var substringMatcher = function(strs) {
+      return function findMatches(q, cb) {
+        var matches, substringRegex;
+
+        // an array that will be populated with substring matches
+        matches = [];
+
+        // regex used to determine if a string contains the substring `q`
+        substrRegex = new RegExp(q, 'i');
+
+        // iterate through the pool of strings and for any string that
+        // contains the substring `q`, add it to the `matches` array
+        $.each(strs, function(i, str) {
+          if (substrRegex.test(str)) {
+            matches.push(str);
+        }
+    });
+
+        cb(matches);
+    };
+    };
+
+    // Init typeahead
+    function initTypeAhead($source, name, datasource) {
+        $source.find('.typeahead').typeahead({
+          hint: true,
+          highlight: true,
+          minLength: 1
+      },
+      {
+          name: name,
+          source: substringMatcher(datasource)
+      });
+    }
+
+    // ================== Manipulation functions ==================
+
+    // Display the specified panel
+    function showPanel(panelId) {
+        $(curPanel).fadeOut(100, function() {
+            $(panelId).fadeIn(100, function() {
+                curPanel = panelId;
+            });
+        });
     }
 
     // Delete the event currently open
@@ -259,10 +287,12 @@ $(function() {
     }
 
     // Clear the event creation form
-    function clearEventForm() {
+    function clearEventForm(initFields) {
         $('#event_creation_form_container').html(event_creation_form_template({}));
         initSelect();
-        initFormFields();
+        if (initFields) {
+            initFormFields();
+        }
     }
 
     function updateReqEventChoiceSelect($eventSelect) {
@@ -279,6 +309,11 @@ $(function() {
         }
     }
 
+    // ================== Form population functions ==================
+
+    /**
+     * Populate game settings from object
+     */
     function populateGameSettings(gameSettings) {
         win_criterion = gameSettings['points_categories'];
 
@@ -291,7 +326,9 @@ $(function() {
         });
     }
 
-    // Populate the event form with the given event to edit it
+    /**
+     * Populate the event form with the given event object
+     */
     function populateEventForm(e) {
         clearEventForm();
         $eventForm = $('#event_creation_form');
@@ -326,28 +363,26 @@ $(function() {
                 setTextInputVal($select_input, '.required_val', requirement.val);
             }
         });
-    
+
         // triggers
         e.triggers.forEach(function(trig) {
-            $eventForm.find('.trigger_list')
-                .append(trigger_template({'event_key': trig.event_key, 'event_time': trig.time }));
+            addTrigger($eventForm, trig.event_key, trig.time);
         });
 
         // choices
         e.choices.forEach(function(choice) {
             // add choice and fill info
-            var $choice_html = $(choice_template({
-                'win_criterion': Object.keys(win_criterion),
-                'key': choice.key,
-                'text': choice.text
-            }));
-            $('#choices').append($choice_html);
-            initSelect();
+            var $choice_html = addChoice($('#choices'), choice.key, choice.text);
 
             // replies
             choice.replies.forEach(function(reply) {
                 $choice_html.find('.replies').append(reply_template({ 'text': reply }));
             });
+
+            // required flags
+            choice.required_flags.forEach(function(flag) {
+                $choice_html.find('.required_flags').append(flag_template({'name':flag}));
+            })
 
             // effects
             var effects_names = Object.keys(choice.effects);
@@ -358,25 +393,13 @@ $(function() {
 
             // triggers
             choice.triggers.forEach(function(trig) {
-                $choice_html.find('.trigger_list')
-                    .append(trigger_template({'event_key': trig.event_key, 'event_time': trig.time }));
+                addTrigger($choice_html, trig.event_key, trig.time);
             });
 
             // flags
             choice.flags.forEach(function(flag) {
-                $choice_html.find('.flag_list').append(flag_template({'name':flag}));
+                $choice_html.find('.flags_to_set').append(flag_template({'name':flag}));
             })
-        });
-
-        
-    }
-
-    // Display the specified panel
-    function showPanel(panelId) {
-        $(curPanel).fadeOut(100, function() {
-            $(panelId).fadeIn(100, function() {
-                curPanel = panelId;
-            });
         });
     }
 
@@ -427,18 +450,46 @@ $(function() {
             $story_view.find('#row_' + time + ' .story_event_row').append(story_event_template({'name': e.name, 'choices': e.choices}));
             times.splice(index, 0, time);
         });
-        
+
+    }
+
+    // ================== Saving and loading functions ==================
+
+    /**
+     * Load game data in from a file
+     */
+     function loadGameData(game_data) {
+        try {
+            _events = game_data['events'];
+
+            // Populate events
+            var event_names = Object.keys(_events);
+            event_names.forEach(function(name) {
+                populateEventForm(_events[name]);
+            });
+
+            // Populate points categories
+            populateGameSettings(game_data['game_settings']);
+        } catch(err) {
+            showToast(err);
+            showToast('Error loading file');
+        }
     }
 
     // Export game to file by making call to Flask webserver
     function exportGame() {
+        var valid = validateEvents(_events);
+        if(!valid) {
+            return;
+        }
+
         var game_settings = {}
         game_settings['points_categories'] = win_criterion;
 
         var data = {}
         data['game_settings'] = game_settings;
         data['events'] = _events;
-        data['flags'] = flag_set;
+        data['flags'] = Array.from(_flag_set);
 
         console.log({'data': JSON.stringify(data) });
 
@@ -469,7 +520,7 @@ $(function() {
         $eventForm.find('#event_texts .incoming_text').each(function(i, text) {
             var val = $(text).val();
             if(val) {
-                incoming_texts.push();
+                incoming_texts.push(val);
             }
         });
 
@@ -500,8 +551,8 @@ $(function() {
         // triggers
         var event_triggers = [];
         $eventForm.find('#event_triggers .trigger_list .trigger').each(function(i, trig) {
-            var eventKey = $(trig).find('#event_key').val();
-            var time = $(trig).find('#event_time').val();
+            var eventKey = $(trig).find('#trigger_event_key').val();
+            var time = $(trig).find('.event_time').val();
             if(eventKey) {
                 event_triggers.push(createTrigger(eventKey, time));
             }
@@ -510,7 +561,7 @@ $(function() {
         // get choices
         var choices = []
         $eventForm.find('.choice').each(function(i, choice) {
-            $choice = $(choice);
+            var $choice = $(choice);
             var key = $choice.find('#event_choice_key').val()
             var text = $choice.find('#event_choice_text').val()
 
@@ -520,12 +571,21 @@ $(function() {
                 replies.push($(reply).val());
             });
 
+            // required flags
+            var required_flags = [];
+            $choice.find('.required_flags .flag_name').each(function(i, flag) {
+                var flag_name = $(flag).text();
+                if (flag_name) {
+                    required_flags.push(flag_name);
+                }
+            });
+
             // choice win condition effects
             var effects = {}
             $choice.find('.win_condition_effect').each(function(i, eff) {
                 var condition = $(eff).find('select').val();
                 var val = $(eff).find('.effect_val').val();
-                if(condition && val !== 0) {
+                if(condition && val !== '0') {
                     effects[condition] = val;
                 }
             });
@@ -533,8 +593,8 @@ $(function() {
             // choice triggers
             var triggers = [];
             $choice.find('.trigger_list .trigger').each(function(i, trig) {
-                var eventKey = $(trig).find('#event_key').val();
-                var time = $(trig).find('#event_time').val();
+                var eventKey = $(trig).find('#trigger_event_key').val();
+                var time = $(trig).find('.event_time').val();
                 if(eventKey) {
                     triggers.push(createTrigger(eventKey, time));
                 }
@@ -542,26 +602,32 @@ $(function() {
 
             // choice flags
             var flags = [];
-            $choice.find('.flag_list .flag_name').each(function(i, flag) {
+            $choice.find('.flags_to_set .flag_name').each(function(i, flag) {
                 var flag_name = $(flag).text();
                 if (flag_name) {
                     flags.push(flag_name);
+                    _flag_set.add(flag_name);
                 }
             });
 
 
-            var choice = createChoice(key, text, effects, triggers, flags, replies);
+            var choice = createChoice(key, text, effects, triggers, flags, replies, required_flags);
             choices.push(choice);
-        });
 
+        });
+        
+        // save the event to memory
         createEvent(key, time, incoming_texts, incoming_from, requirements, event_triggers, choices);
+
         return key;
     }
+
+    // ================== Model creation functions ==================
 
     /**
      * Create a choice
      */
-    function createTrigger(eventKey, time) {
+     function createTrigger(eventKey, time) {
         trigger = {
             'event_key': eventKey,
             'time': time
@@ -572,14 +638,15 @@ $(function() {
     /**
      * Create a choice
      */
-    function createChoice(key, text, effect, triggers, flags, replies) {
+     function createChoice(key, text, effect, triggers, flags, replies, required_flags) {
         choice = {
             'key': key,
             'text': text,
             'effects': effect,
             'triggers': triggers,
             'flags': flags,
-            'replies': replies
+            'replies': replies,
+            'required_flags': required_flags
         }
         return choice;
     }
@@ -587,7 +654,7 @@ $(function() {
     /**
      * Create an event
      */
-    function createEvent(name, time, incoming_texts, from, requirements, triggers, choices) {
+     function createEvent(name, time, incoming_texts, from, requirements, triggers, choices) {
         children = [];
         choices.forEach(function(choice) {
             choice.triggers.forEach(function(trig) {
@@ -610,7 +677,49 @@ $(function() {
         return game_event;
     }
 
-    // Component adding function
+    function validateEvents(events) {
+        var event_errors = {};
+        Object.keys(events).forEach(function(name) {
+            var errors = [];
+            var e = events[name];
+
+            // check trigger references
+            e.triggers.forEach(function(trig) {
+                if(!(trig.event_key in events)) {
+                    errors.push('Trigger refers to unknown event "' + trig.event_key + '"');
+                }
+            });
+
+            e.choices.forEach(function(choice) {
+                choice.triggers.forEach(function(trig) {
+                    if(!(trig.event_key in events)) {
+                        errors.push('Choice "' + choice.key + '", trigger refers to unknown event "' + trig.event_key + '"');
+                    }
+                });
+
+                choice.required_flags.forEach(function(rflag) {
+                    if(!_flag_set.has(rflag)) {
+                        errors.push('Choice "' + choice.key + '" has unknown required flag "' + rflag + '"');
+                    }
+                });
+            });
+
+            if(errors.length > 0) {
+                event_errors[name] = errors;
+            }
+        })
+        
+        if(Object.keys(event_errors).length > 0) {
+            $('#error_modal .error_list').html(JSON.stringify(event_errors));
+            $('#error_modal').openModal();
+            return false;
+        }
+
+        return true;
+    }
+
+
+    // ================== Component adding function ==================
 
     function setTextInputVal($source, $el, val) {
         var $input = $source.find($el);
@@ -628,6 +737,38 @@ $(function() {
         $('#event_texts').append(event_text_template({'text': text}));
     }
 
+    function addTrigger($source, event_key, event_time) {
+        var $trig_html = $(trigger_template({'event_key': event_key, 'event_time': event_time }));
+        $source.find('.trigger_list').append($trig_html);
+        initTypeAhead($trig_html, 'events', Object.keys(_events));
+    }
+
+    function addChoice($source, key, text) {
+        var $choice_html = $(choice_template({
+            'win_criterion': Object.keys(win_criterion),
+            'key': key,
+            'text': text
+        }));
+        $source.append($choice_html);
+        initSelect();
+        initTypeAhead($choice_html, 'flags', Array.from(_flag_set));
+        return $choice_html;
+    }
+
+    // ================== Utility functions ==================
+
+    function showToast(text) {
+        Materialize.toast(text, 2000);
+    }
+
+    function isInt(n) {
+      return !isNaN(parseInt(n)) && isFinite(n);
+    }
+
+    function isNumeric(n) {
+      return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
 });
 
 
@@ -635,18 +776,4 @@ $(function() {
 
 
 
-// Utility functions
-
-
-function showToast(text) {
-    Materialize.toast(text, 2000);
-}
-
-function isInt(n) {
-  return !isNaN(parseInt(n)) && isFinite(n);
-}
-
-function isNumeric(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
-}
 
