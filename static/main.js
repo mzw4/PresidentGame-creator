@@ -11,6 +11,8 @@ $(function() {
     _events = {};
     flags = {};
 
+    _recently_deleted_event = null;
+
     // ================== Templates ==================
     var event_creation_form_template = Handlebars.compile($("#event_creation_form_template").html());
 
@@ -31,13 +33,11 @@ $(function() {
     // ================== Init ==================
     
     $( ".draggable" ).draggable();
+    $('.modal-trigger').leanModal(); // init materialize modal
 
     initSelect(); // materialize select components
 
     clearEventForm(); // empty event creation form
-
-    Materialize.toast('I am a toast!', 4000) // 4000 is the duration of the toast
-
 
     // ================== Event handlers ==================
 
@@ -161,6 +161,16 @@ $(function() {
         $(this).parent().remove();
     });
 
+    $('#delete_event_button').on('click', function(event) {
+        event.preventDefault();
+        deleteOpenEvent();
+    });
+
+    $('#undo_delete').on('click', function(event) {
+        event.preventDefault();
+        undoDelete();
+    });
+
     $('#new_event_button').on('click', function(event) {
         event.preventDefault();
         clearEventForm();
@@ -200,13 +210,20 @@ $(function() {
     });
 
 
+    /**
+     * Load game data in from a file
+     */
+    function loadGameData(game_data) {
+        _events = game_data['events'];
 
-    function loadGameData(event_data) {
-        _events = event_data;
+        // Populate events
         var event_names = Object.keys(_events);
         event_names.forEach(function(name) {
-            populateEventForm(_events[name])
-        })
+            populateEventForm(_events[name]);
+        });
+
+        // Populate points categories
+        populateGameSettings(game_data['game_settings']);
     }
 
     // initialize all select components
@@ -214,9 +231,38 @@ $(function() {
         $('select').material_select();
     }
 
+    // Init form fields
+    function initFormFields() {
+        $('#win_criterion').append(win_criteria_template({}));
+        addIncomingText('');
+    }
+
+    // Delete the event currently open
+    function deleteOpenEvent() {
+        var key = $('#event_info').find('#event_key').val();
+        if(key in _events) {
+            _recently_deleted_event = _events[key];
+            delete _events[key];
+            clearEventForm();
+            showToast('Event deleted.');
+        }
+    }
+
+    // Undo a delete event
+    function undoDelete() {
+        if (_recently_deleted_event) {
+            _events[_recently_deleted_event.name] = _recently_deleted_event;
+            populateEventForm(_recently_deleted_event);
+            showToast('Restored "' + _recently_deleted_event.name + '"');
+            _recently_deleted_event = null;
+        }
+    }
+
     // Clear the event creation form
     function clearEventForm() {
         $('#event_creation_form_container').html(event_creation_form_template({}));
+        initSelect();
+        initFormFields();
     }
 
     function updateReqEventChoiceSelect($eventSelect) {
@@ -233,6 +279,17 @@ $(function() {
         }
     }
 
+    function populateGameSettings(gameSettings) {
+        win_criterion = gameSettings['points_categories'];
+
+        // clear it
+        $('#win_criterion').html('');
+
+        Object.keys(win_criterion).forEach(function(pointsCategory) {
+            var weight = win_criterion[pointsCategory];
+            $('#win_criterion').append(win_criteria_template({ 'name': pointsCategory, 'weight': weight }));
+        });
+    }
 
     // Populate the event form with the given event to edit it
     function populateEventForm(e) {
@@ -328,6 +385,7 @@ $(function() {
         var $story_view = $('#story_view');
         // clear story view
         $story_view.html('');
+        $story_view.append(story_event_row_template({'time': 'unassigned'}));
 
         // populate events
         var times = [];
@@ -335,8 +393,7 @@ $(function() {
         event_keys.forEach(function(name) {
             var e = _events[name];
             if (!isInt(e.time)) {
-                console.log('Invalid event time');
-                console.log(e);
+                $story_view.find('#row_unassigned .story_event_row').append(story_event_template({'name': e.name, 'choices': e.choices}));
                 return;
             }
 
@@ -344,24 +401,33 @@ $(function() {
             var row_template = story_event_row_template({'time': time});
 
             // insert row if necessary, figure out where
+            var index = -1;
             if (times.length === 0) {
                 $story_view.prepend(row_template);
-            } else if (times[times.length-1] < time) {
-                $story_view.append(row_template);
+                index = 0;
             } else {
                 for(var i = 0; i < times.length; i++) {
                     if (times[i] === time) {
+                        index = i;
                         break;
                     }
                     if (times[i] > time) {
                         $story_view.find('#row_' + times[i]).before(row_template);
+                        index = i;
+                        break;
+                    }
+                    if(i === times.length - 1 && times[i] < time) {
+                        $story_view.find('#row_' + times[i]).after(row_template);
+                        index = i+1;
+                        break;
                     }
                 }
             }
 
             $story_view.find('#row_' + time + ' .story_event_row').append(story_event_template({'name': e.name, 'choices': e.choices}));
-            times.push(time);
-        })
+            times.splice(index, 0, time);
+        });
+        
     }
 
     // Export game to file by making call to Flask webserver
@@ -377,8 +443,15 @@ $(function() {
         console.log({'data': JSON.stringify(data) });
 
         $.post('/save_game', {'data': JSON.stringify(data) }, function(response) {
+            if(response == 'failed') {
+                console.log('failed');
+                return;
+            }
+
             console.log(response);
-            showToast('Exported game.');
+            $('#export_modal_url').attr('href', response);
+            $('#export_modal').openModal();
+            // showToast('Exported game.');
         });
     }
 
@@ -394,7 +467,10 @@ $(function() {
 
         var incoming_texts = [];
         $eventForm.find('#event_texts .incoming_text').each(function(i, text) {
-            incoming_texts.push($(text).val());
+            var val = $(text).val();
+            if(val) {
+                incoming_texts.push();
+            }
         });
 
         // requiremnts

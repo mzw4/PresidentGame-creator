@@ -27,7 +27,13 @@ body {
 
 #event_creation_panel {
     display: none;
-}/*
+}
+
+.float_container button {
+    width: 150px;
+}
+
+/*
 #event_creation_form {
     display: none;
 }*/
@@ -77,6 +83,13 @@ body {
     padding: 5px;
 }
 
+#undo_delete {
+    margin-top: -10px;
+}
+#undo_delete a {
+    color: red;
+}
+
 .story_event {
     border: 1px solid #ff775f;
     padding: 15px;
@@ -112,6 +125,7 @@ body {
     position: fixed;
     right: 50px;
     z-index: 500;
+    text-align: center;
 }
 
 .float_bottom {

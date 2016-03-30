@@ -25,7 +25,6 @@
         <button id="open_global_options_button" class="control_button col s12 waves-effect waves-light btn blue grey lighten-5">Global options</button>
         <button id="open_event_panel_button" class="control_button col s12 waves-effect waves-light btn blue grey lighten-5">Create an event</button>
         <button id="view_story_button" class="control_button col s12 waves-effect waves-light btn blue grey lighten-5">View story</button>
-        <button id="" class="control_button col s12 waves-effect waves-light btn blue grey lighten-5">Add choice</button>
 
         <!-- Load and export buttons -->
         <div class="float_bottom">
@@ -48,17 +47,6 @@
           <button id="save_global_options_button" class="float_button waves-effect waves-light btn red">Save Options</button>
 
           <div class="med_header bot15">Global options</div>
-          <div class="win_criteria row">
-            <div class="input-field col s4">
-              <input id="event_key" type="text" class="validate" name="name">
-              <label for="event_key" data-error="" data-success="">Criteria name</label>
-            </div>
-            <div class="input-field col s4">
-              <input id="event_time" type="text" class="validate" name="weight">
-              <label for="event_time" data-error="" data-success="">Weight</label>
-            </div>
-          </div>
-
           <div id="win_criterion"></div>
           <button id="add_win_criteria_button" class="waves-effect waves-light btn blue-grey lighten-2">Add win criteria</button>
         </form>
@@ -66,8 +54,10 @@
         <!-- Event creation panel -->
         <div id="event_creation_panel">
           <div class="float_container">
-            <button id="new_event_button" class="waves-effect waves-light btn red">New Event</button><br>
-            <button id="save_event_button" class="waves-effect waves-light btn red">Save Event</button>
+            <button id="delete_event_button" class="waves-effect waves-light btn red">Delete Event</button><br>
+            <div id="undo_delete"><a href="">Undo</a></div><br>
+            <button id="new_event_button" class="waves-effect waves-light btn blue-grey lighten-2">New Event</button><br>
+            <button id="save_event_button" class="waves-effect waves-light btn blue darken-3">Save Event</button>
           </div>
           <div id="event_creation_form_container"></div>
         </div>
@@ -83,6 +73,17 @@
 
     </div>
 
+  </div>
+
+  <!-- Modal Structure -->
+  <div id="export_modal" class="modal">
+    <div class="modal-content">
+      <h4>Download this shit!</h4>
+      <a id="export_modal_url" href="#" download>Game File</a>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+    </div>
   </div>
 
 </body>
@@ -171,12 +172,12 @@
 <script id="win_criteria_template" type="text/x-handlebars-template">
   <div class="win_criteria row">
     <div class="input-field col s4">
-      <input id="event_key" type="text" class="validate" name="name">
-      <label for="event_key" data-error="" data-success="">Criteria name</label>
+      <input value="{{name}}" id="points_category_name" type="text" class="validate" name="name">
+      <label {{#if name}}class="active"{{/if}} for="points_category_name" data-error="" data-success="">Criteria name</label>
     </div>
     <div class="input-field col s4">
-      <input id="event_time" type="text" class="validate" name="weight">
-      <label for="event_time" data-error="" data-success="">Weight</label>
+      <input value="{{weight}}" id="points_category_weight" type="text" class="validate" name="weight">
+      <label {{#if weight}}class="active"{{/if}} for="points_category_weight" data-error="" data-success="">Weight</label>
     </div>
     <button class="waves-effect waves-light btn white delete_button top15">X</button>
   </div>
@@ -320,12 +321,6 @@
         <div class="input-field col s8">
           <input id="incoming_from" type="text" class="validate">
           <label for="incoming_from" data-error="" data-success="">From</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s8">
-          <input class="incoming_text" type="text" class="validate">
-          <label for="incoming_text" data-error="" data-success="">Event text</label>
         </div>
       </div>
     </div>
