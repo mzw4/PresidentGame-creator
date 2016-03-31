@@ -154,9 +154,7 @@
             "triggers": []
         }
     }, 
-    "flags": [
-        "insulted_cruz"
-    ], 
+    "flags": [], 
     "game_settings": {
         "points_categories": {
             "expertise": "1", 

@@ -28,7 +28,7 @@ def save_game():
         else:
             fname = '%s.json' % game_name
     else:
-        fname = 'temp.json'
+        fname = '_game_data.json'
 
     # make the directory
     # os.makedirs(savedir)

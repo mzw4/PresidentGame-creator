@@ -9,6 +9,7 @@ $(function() {
     _flag_set = new Set()
 
     _recently_deleted_event = null;
+    _cur_fname = ''
 
     // ================== Templates ==================
     var event_creation_form_template = Handlebars.compile($("#event_creation_form_template").html());
@@ -209,6 +210,7 @@ $(function() {
     // load a game from the server
     $('body').on('click', '.game_name', function() {
         var fname = $(this).data('name');
+        _cur_fname = fname;
         $.get('/load_game', {'fname': fname}, function(data) {
             console.log(data);
             if('error' in data || !('game_data' in data)) {
@@ -241,7 +243,9 @@ $(function() {
 
         if (files.length > 0) {
             // Closure to capture the file information.
-            reader.onload = (function(theFile) {
+            reader.onload = (function(file) {
+                console.log(file.name);
+                _cur_fname = file.name
                 return function(e) {
                     var data_json = JSON.parse(e.target.result);
                     loadGameData(data_json);
@@ -574,7 +578,7 @@ $(function() {
     function saveToServer() {
         var fname = $('#saveserver_name').val();
         $('#saveserver_name').val('');
-
+        _cur_fname = fname;
         exportGame(fname);
     }
 
