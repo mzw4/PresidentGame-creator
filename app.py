@@ -36,7 +36,7 @@ def save_game():
     with open(_savedir + fname, 'w') as outfile:
         json.dump(data, outfile, indent=4, sort_keys=True)
 
-    return fname
+    return _savedir + fname
 
 @app.route('/get_games', methods=['GET'])
 def get_saved_games():
