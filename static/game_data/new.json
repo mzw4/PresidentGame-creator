@@ -103,7 +103,7 @@
                     "triggers": [
                         {
                             "event_key": "fired_response", 
-                            "time": "1"
+                            "time": "0"
                         }
                     ]
                 }, 
@@ -154,11 +154,7 @@
             "triggers": []
         }
     }, 
-    "flags": [
-        "fired_manager", 
-        "insulted_cruz", 
-        "trump_soft"
-    ], 
+    "flags": [], 
     "game_settings": {
         "points_categories": {
             "expertise": "1", 

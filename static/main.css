@@ -64,6 +64,15 @@ body {
     width: 100%;
 }
 
+#loadserver_button {
+    color: white;
+}
+
+#saveserver_button {
+    color: white;
+    margin-bottom: 30px;
+}
+
 #export_button {
     color: white;
 }
@@ -126,6 +135,17 @@ body {
     height: 300px;
 }
 
+
+#loadservergame_modal {
+    max-height: 600px;
+}
+.game_name:hover {
+    cursor: pointer;
+    background-color: #e6e6e6;
+    transition: .2s ease all;
+    -webkit-transition: .2s ease all;
+}
+
 /* Class styles */
 
 
@@ -142,7 +162,7 @@ body {
 }
 
 .float_bottom {
-    position: fixed;
+    position: absolute;
     bottom: 50px;
 }
 

@@ -27,6 +27,10 @@ $(function() {
     var story_event_template = Handlebars.compile($("#story_event_template").html());
     var story_event_row_template = Handlebars.compile($("#story_event_row_template").html());
     
+    // Save/load templates
+    var game_table_template = Handlebars.compile($("#game_table_template").html());
+
+
     // ================== Init ==================
     
     $( ".draggable" ).draggable();
@@ -187,8 +191,48 @@ $(function() {
     $('#export_button').on('click', function(event) {
         event.preventDefault();
         console.log('exporting');
-        exportGame();
+        exportGame('');
     });
+
+    // show game files from server
+    $('#loadserver_button').on('click', function(event) {
+        event.preventDefault();
+
+        $.get('/get_games', function(data) {
+            if(data && data.length > 0) {
+                $('#game_name_table').html(game_table_template({ 'games': data }))
+                $('#loadservergame_modal').openModal();
+            }
+        }, 'json');
+    });
+
+    // load a game from the server
+    $('body').on('click', '.game_name', function() {
+        var fname = $(this).data('name');
+        $.get('/load_game', {'fname': fname}, function(data) {
+            console.log(data);
+            if('error' in data || !('game_data' in data)) {
+                showToast('Error loading file');
+            } else {
+                $('#loadservergame_modal').closeModal();
+                loadGameData(data['game_data'])
+            }
+
+        }, 'json')
+    });
+
+    // save game to server
+    $('#saveserver_button').on('click', function(event) {
+        event.preventDefault();
+        $('#saveservergame_modal').openModal();        
+    });
+
+    // save game to server
+    $('#saveserver_confirm').on('click', function(event) {
+        event.preventDefault();
+        saveToServer();
+    });
+
 
     $('#load_file_input').on('change', function(event) {
         // get uploaded file
@@ -481,6 +525,12 @@ $(function() {
 
             // Populate points categories
             populateGameSettings(game_data['game_settings']);
+            showToast('Game loaded successfully!');
+
+            // Show the story view
+            populateStory();
+            showPanel('#story_view');
+
         } catch(err) {
             showToast(err);
             showToast('Error loading file');
@@ -488,7 +538,8 @@ $(function() {
     }
 
     // Export game to file by making call to Flask webserver
-    function exportGame() {
+    // if fname is empty, save as temp.json
+    function exportGame(fname) {
         var valid = validateEvents(_events);
         if(!valid) {
             return;
@@ -504,17 +555,27 @@ $(function() {
 
         console.log({'data': JSON.stringify(data) });
 
-        $.post('/save_game', {'data': JSON.stringify(data) }, function(response) {
+        $.post('/save_game', {'data': JSON.stringify(data), 'fname': fname }, function(response) {
             if(response == 'failed') {
-                console.log('failed');
+                showToast('Saved failed :(');
                 return;
             }
 
             console.log(response);
-            $('#export_modal_url').attr('href', response);
-            $('#export_modal').openModal();
-            // showToast('Exported game.');
+            if(!fname) {
+                $('#export_modal_url').attr('href', response);
+                $('#export_modal').openModal();
+            } else {
+                showToast('Saved to server successfully!');
+            }
         });
+    }
+
+    function saveToServer() {
+        var fname = $('#saveserver_name').val();
+        $('#saveserver_name').val('');
+
+        exportGame(fname);
     }
 
     // Save the event to memory

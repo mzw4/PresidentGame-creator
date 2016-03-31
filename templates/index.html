@@ -31,15 +31,18 @@
 
         <!-- Load and export buttons -->
         <div class="float_bottom">
+          <button id="loadserver_button" class="control_button col s10 waves-effect waves-light btn blue darken-3">Load from Server</button>
+          <button id="saveserver_button" class="control_button col s10 waves-effect waves-light btn red">Save to Server</button>
+          <br>
           <form class="file-field input-field">
-            <button id="load_button" class="control_button col s12 waves-effect waves-light btn blue darken-3">
-              <span>Load</span>
+            <button id="load_button" class="control_button col s10 waves-effect waves-light btn blue darken-3">
+              <span>Load File</span>
               <input id="load_file_input" type="file">
             </button>
           </form>
 
-          <button id="export_button" class="control_button col s12 waves-effect waves-light btn red">Export</button>
-          <div class="sub_header white_text">Do this often. Trust me.</div>
+          <button id="export_button" class="control_button col s10 waves-effect waves-light btn red">Export</button>
+          <div class="sub_header white_text col s12">Do this often. Trust me.</div>
         </div>
       </div>
 
@@ -158,6 +161,35 @@
     </div>
     <div class="modal-footer">
       <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+    </div>
+  </div>
+
+  <div id="loadservergame_modal" class="modal">
+    <div class="modal-content">
+      <div class="med_header bot15">Load a game</div>
+      <table id="game_name_table" class="bordered highlight">
+      </table>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+    </div>
+  </div>
+
+  <div id="saveservergame_modal" class="modal">
+    <div class="modal-content">
+      <div class="med_header bot15">Save your game</div>
+      <div class="sm_header">What would you like to name it?</div>
+      <div class="sm_header bot15">(if the name exists, we will append a timestamp to the name and save as a new file)</div>
+      <div class="row">
+        <div class="input-field col s12">
+          <input placeholder="Name" id="saveserver_name" type="text">
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <a href="#!" id="saveserver_confirm" class="modal-action modal-close waves-effect waves-green btn-flat">Ok</a>
+      <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
     </div>
   </div>
 
@@ -445,6 +477,16 @@
   </form>
 
 </script>
+
+
+<script id="game_table_template" type="text/x-handlebars-template">
+  {{#each games}}
+    <tr class="game_name_row">
+      <td class="game_name" data-name="{{this}}">{{this}}</td>
+    </tr>
+  {{/each}}
+</script>
+
 
 {% endraw %}
 

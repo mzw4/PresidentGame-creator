@@ -1,0 +1,166 @@
+{
+    "events": {
+        "cruz_lashout": {
+            "children": [], 
+            "choices": [
+                {
+                    "effects": {
+                        "public_image": "10"
+                    }, 
+                    "flags": [
+                        "trump_soft"
+                    ], 
+                    "key": "conservative", 
+                    "replies": [
+                        "Smart thinking! I'll pass that along to the media.", 
+                        "I just hope people won't see this as being soft."
+                    ], 
+                    "required_flags": [], 
+                    "text": "I won't justify a childish attack like this with a response.", 
+                    "triggers": []
+                }, 
+                {
+                    "effects": {
+                        "public_image": "-10"
+                    }, 
+                    "flags": [
+                        "insulted_cruz"
+                    ], 
+                    "key": "attack", 
+                    "replies": [
+                        "Yeah! That'll put that cocky ass in his place!", 
+                        "Tell it like it is, sir. Tell it like it is."
+                    ], 
+                    "required_flags": [], 
+                    "text": "Ted Cruz is a Canadian piece of shit!", 
+                    "triggers": []
+                }
+            ], 
+            "from": "campaign_manager", 
+            "incoming_texts": [
+                "Hey Don, Ted Cruz just issued a statement saying you have little fingers!", 
+                "We need to do something about this!"
+            ], 
+            "name": "cruz_lashout", 
+            "requirements": [], 
+            "time": "", 
+            "triggers": []
+        }, 
+        "fired_response": {
+            "children": [], 
+            "choices": [
+                {
+                    "effects": {}, 
+                    "flags": [
+                        "fired_manager"
+                    ], 
+                    "key": "yes", 
+                    "replies": [
+                        "Well shit Donald.", 
+                        "You're gonna lose anyways you racist dick", 
+                        "Fuck you."
+                    ], 
+                    "required_flags": [], 
+                    "text": "Yes. Get out.", 
+                    "triggers": []
+                }, 
+                {
+                    "effects": {}, 
+                    "flags": [], 
+                    "key": "just_kidding", 
+                    "replies": [
+                        "...Good one sir.", 
+                        "Back to business."
+                    ], 
+                    "required_flags": [], 
+                    "text": "Ha! Just kidding Walter. I need you around so I have something to blame for shit.", 
+                    "triggers": []
+                }
+            ], 
+            "from": "campaign_manager", 
+            "incoming_texts": [
+                "What?", 
+                "Are you...serious? You NEED ME Donald."
+            ], 
+            "name": "fired_response", 
+            "requirements": [], 
+            "time": "", 
+            "triggers": []
+        }, 
+        "intro": {
+            "children": [
+                "fired_response", 
+                "cruz_lashout"
+            ], 
+            "choices": [
+                {
+                    "effects": {}, 
+                    "flags": [], 
+                    "key": "intro_fired", 
+                    "replies": [], 
+                    "required_flags": [], 
+                    "text": "You're fired", 
+                    "triggers": [
+                        {
+                            "event_key": "fired_response", 
+                            "time": "0"
+                        }
+                    ]
+                }, 
+                {
+                    "effects": {
+                        "public_image": "-10"
+                    }, 
+                    "flags": [
+                        "insulted_cruz"
+                    ], 
+                    "key": "intro_cruzliar", 
+                    "replies": [
+                        "Uh, OK I'll let the press know.", 
+                        "You are Cruz are still pretty friendly right now you know. This could really shake things up!"
+                    ], 
+                    "required_flags": [], 
+                    "text": "Tell everyone that Ted Cruz is a liar!", 
+                    "triggers": [
+                        {
+                            "event_key": "cruz_lashout", 
+                            "time": "5"
+                        }
+                    ]
+                }, 
+                {
+                    "effects": {
+                        "public_image": "20"
+                    }, 
+                    "flags": [], 
+                    "key": "intro_makegreat", 
+                    "replies": [
+                        "Sounds good! I'll let the press know.", 
+                        "That slogan is really catching on btw. Remember who came up with it? Consider that raise :)"
+                    ], 
+                    "required_flags": [], 
+                    "text": "Tell the world I want to make america great again!", 
+                    "triggers": []
+                }
+            ], 
+            "from": "campaign_manager", 
+            "incoming_texts": [
+                "Donald, the Iowa caucuses are knocking on our doorstep and we're lagging in the polls!", 
+                "We need to do something bold to get attention!"
+            ], 
+            "name": "intro", 
+            "requirements": [], 
+            "time": "0", 
+            "triggers": []
+        }
+    }, 
+    "flags": [], 
+    "game_settings": {
+        "points_categories": {
+            "expertise": "1", 
+            "funding": "1", 
+            "party_favor": "1", 
+            "public_image": "1"
+        }
+    }
+}
